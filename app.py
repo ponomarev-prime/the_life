@@ -1,5 +1,4 @@
-# app.py
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import random
 
 app = Flask(__name__)
@@ -46,8 +45,11 @@ class GameOfLife:
                     display_world[x][y] = 0
         return display_world
 
-# Initialize a global instance
-game = GameOfLife(25, 25)
+    def reset_counter(self):
+        self.counter = 0
+
+# Initialize a single instance of GameOfLife
+game_instance = GameOfLife(25, 25)
 
 @app.route('/')
 def index():
@@ -55,18 +57,18 @@ def index():
 
 @app.route('/live')
 def live():
-    return render_template('live.html', world=game.get_display_world(), counter=game.counter)
+    game_instance.form_new_generation()
+    return render_template('live.html', world=game_instance.get_display_world(), counter=game_instance.counter)
 
 @app.route('/update')
 def update():
-    game.form_new_generation()
-    return jsonify(world=game.get_display_world(), counter=game.counter)
+    game_instance.form_new_generation()
+    return jsonify(world=game_instance.get_display_world(), counter=game_instance.counter)
 
 @app.route('/reset_counter')
 def reset_counter():
-    global game
-    game = GameOfLife(25, 25)  # Reinitialize the game
-    return jsonify(counter=game.counter)
+    game_instance.reset_counter()
+    return jsonify(counter=game_instance.counter)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,7 +4,7 @@
 <div class="button-container">
     <a class="btn btn-warning" href="{{ url_for('index') }}">На главную</a>
     <a class="btn btn-info" id="refresh-btn" href="#">Обновить</a>
-    <a class="btn btn-danger" href="{{ url_for('reset_counter') }}">Сбросить счётчик</a>
+    <a class="btn btn-danger" id="reset-counter-btn" href="#">Сбросить счётчик</a>
 </div>
 
 <div class="counter">Поколений: {{ counter }}</div>
@@ -57,6 +57,13 @@
             e.preventDefault();
             $.getJSON('{{ url_for('update') }}', function(data) {
                 updateTable(data);
+            });
+        });
+
+        $('#reset-counter-btn').click(function(e) {
+            e.preventDefault();
+            $.getJSON('{{ url_for('reset_counter') }}', function(data) {
+                $('.counter').text('Поколений: ' + data.counter);
             });
         });
 
