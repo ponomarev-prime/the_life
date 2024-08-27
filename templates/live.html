@@ -1,17 +1,16 @@
-<!-- templates/live.html -->
 {% extends 'base.html' %}
 
 {% block app_content %}
 <div class="button-container">
     <a class="btn btn-warning" href="{{ url_for('index') }}">На главную</a>
-    <a class="btn btn-info" href="{{ url_for('live') }}">Обновить</a>
+    <a class="btn btn-info" id="refresh-btn" href="#">Обновить</a>
     <a class="btn btn-danger" href="{{ url_for('reset_counter') }}">Сбросить счётчик</a>
 </div>
 
 <div class="counter">Поколений: {{ counter }}</div>
 
 <div class="table-container">
-    <table class="world">
+    <table class="world" id="world-table">
         {% for row in world %}
         <tr>
             {% for cell in row %}
@@ -27,11 +26,46 @@
         {% endfor %}
     </table>
 </div>
-
 {% endblock %}
-{% block scripts %}
-    {{ super() }}
-    <script>
-        setInterval(() => window.location.reload(), 2000); // Reload every second
-    </script>
+
+{% block body_scripts %}
+{{ super() }}
+<script>
+    function updateTable(data) {
+        var table = $('#world-table');
+        table.empty(); // Clear the existing table content
+        data.world.forEach(function(row) {
+            var tr = $('<tr></tr>');
+            row.forEach(function(cell) {
+                var td = $('<td></td>').addClass('cell');
+                if (cell === 1) {
+                    td.addClass('living-cell');
+                } else if (cell === 2) {
+                    td.addClass('prev-living-cell');
+                } else {
+                    td.addClass('dead-cell');
+                }
+                tr.append(td);
+            });
+            table.append(tr);
+        });
+        $('.counter').text('Поколений: ' + data.counter);
+    }
+
+    $(document).ready(function() {
+        $('#refresh-btn').click(function(e) {
+            e.preventDefault();
+            $.getJSON('{{ url_for('update') }}', function(data) {
+                updateTable(data);
+            });
+        });
+
+        // Automatically update the table every 2 seconds
+        setInterval(function() {
+            $.getJSON('{{ url_for('update') }}', function(data) {
+                updateTable(data);
+            });
+        }, 2000);
+    });
+</script>
 {% endblock %}

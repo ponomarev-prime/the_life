@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect, url_for
+# app.py
+from flask import Flask, render_template, jsonify
 import random
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Нужно для использования сессий
 
 class GameOfLife:
     def __init__(self, width, height):
@@ -21,7 +21,6 @@ class GameOfLife:
         return count
 
     def form_new_generation(self):
-        print(f"Before generation: Counter = {self.counter}")  # Debugging line
         new_world = [[0 for _ in range(self.width)] for _ in range(self.height)]
         for x in range(self.width):
             for y in range(self.height):
@@ -34,7 +33,6 @@ class GameOfLife:
         self.prev_world = [[cell for cell in row] for row in self.world]
         self.world = new_world
         self.counter += 1  # Increment generation counter
-        print(f"After generation: Counter = {self.counter}")  # Debugging line
 
     def get_display_world(self):
         display_world = [[0 for _ in range(self.width)] for _ in range(self.height)]
@@ -48,8 +46,8 @@ class GameOfLife:
                     display_world[x][y] = 0
         return display_world
 
-# Глобальная переменная для хранения состояния игры
-game_of_life = GameOfLife(25, 25)
+# Initialize a global instance
+game = GameOfLife(25, 25)
 
 @app.route('/')
 def index():
@@ -57,15 +55,18 @@ def index():
 
 @app.route('/live')
 def live():
-    global game_of_life
-    game_of_life.form_new_generation()
-    return render_template('live.html', world=game_of_life.get_display_world(), counter=game_of_life.counter)
+    return render_template('live.html', world=game.get_display_world(), counter=game.counter)
+
+@app.route('/update')
+def update():
+    game.form_new_generation()
+    return jsonify(world=game.get_display_world(), counter=game.counter)
 
 @app.route('/reset_counter')
 def reset_counter():
-    global game_of_life
-    game_of_life.counter = 0
-    return redirect(url_for('live'))
+    global game
+    game = GameOfLife(25, 25)  # Reinitialize the game
+    return jsonify(counter=game.counter)
 
 if __name__ == '__main__':
     app.run(debug=True)
