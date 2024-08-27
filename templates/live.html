@@ -5,21 +5,33 @@
 <div class="button-container">
     <a class="btn btn-warning" href="{{ url_for('index') }}">На главную</a>
     <a class="btn btn-info" href="{{ url_for('live') }}">Обновить</a>
+    <a class="btn btn-danger" href="{{ url_for('reset_counter') }}">Сбросить счётчик</a>
 </div>
+
+<div class="counter">Поколений: {{ counter }}</div>
 
 <div class="table-container">
     <table class="world">
         {% for row in world %}
         <tr>
             {% for cell in row %}
-            {% if cell %}
+            {% if cell == 1 %}
             <td class="cell living-cell"></td>
+            {% elif cell == 2 %}
+            <td class="cell prev-living-cell"></td>
             {% else %}
-            <td class="cell"></td>
+            <td class="cell dead-cell"></td>
             {% endif %}
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
 </div>
+
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        setInterval(() => window.location.reload(), 2000); // Reload every second
+    </script>
 {% endblock %}

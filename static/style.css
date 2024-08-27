@@ -42,7 +42,15 @@ body {
 }
 
 .living-cell {
-    background-color: #000;
+    background-color: green; /* Живая клетка */
+}
+
+.dead-cell {
+    background-color: white; /* Пустая клетка */
+}
+
+.prev-living-cell {
+    background-color: maroon; /* Мертвая клетка, которая была живой ранее */
 }
 
 .button-container {
@@ -56,4 +64,15 @@ body {
 
 .table-container table {
     border: 1px solid #ddd; /* Optional: border around the table */
+}
+
+.counter {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Цвет кнопки для сброса */
+    border: none;
+    color: white;
 }
