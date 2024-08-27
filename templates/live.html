@@ -1,0 +1,25 @@
+<!-- templates/live.html -->
+{% extends 'base.html' %}
+
+{% block app_content %}
+<div class="button-container">
+    <a class="btn btn-warning" href="{{ url_for('index') }}">На главную</a>
+    <a class="btn btn-info" href="{{ url_for('live') }}">Обновить</a>
+</div>
+
+<div class="table-container">
+    <table class="world">
+        {% for row in world %}
+        <tr>
+            {% for cell in row %}
+            {% if cell %}
+            <td class="cell living-cell"></td>
+            {% else %}
+            <td class="cell"></td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
